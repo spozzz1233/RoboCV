@@ -2,6 +2,7 @@ package com.example.robocv.data
 
 import com.example.robocv.domain.model.Garbage
 import com.example.robocv.domain.model.StoragePlaceRoboCV
+import com.example.robocv.util.Resource
 import kotlinx.coroutines.flow.Flow
 import java.sql.Connection
 

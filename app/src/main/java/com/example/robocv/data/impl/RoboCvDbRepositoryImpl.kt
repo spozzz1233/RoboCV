@@ -1,8 +1,5 @@
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.util.Log
-import com.example.robocv.data.Resource
+import com.example.robocv.util.Resource
 import com.example.robocv.data.RoboCvDbRepository
 import com.example.robocv.domain.ErrorType
 import com.example.robocv.domain.model.Garbage
@@ -12,12 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.lang.Exception
-import java.lang.NullPointerException
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.SQLException
 
 class RoboCvDbRepositoryImpl(
     private val context: Context

@@ -2,14 +2,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.robocv.data.Resource
+import com.example.robocv.util.Resource
 import com.example.robocv.domain.ErrorType
 import com.example.robocv.domain.main.RoboCvDbInteractor
 import com.example.robocv.domain.model.Garbage
 import com.example.robocv.domain.model.StoragePlaceRoboCV
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.sql.SQLException
 
 class MainActivityViewModel(
     private val interactor: RoboCvDbInteractor
@@ -38,8 +37,8 @@ class MainActivityViewModel(
     private val _mainLoadingLiveData = MutableLiveData<Boolean>()
     val mainLoadingLiveData: LiveData<Boolean> = _mainLoadingLiveData
 
-    private val _resultGarbageLiveData = MutableLiveData<Boolean>()
-    val resultGarbageLiveData: LiveData<Boolean> = _resultGarbageLiveData
+    private val _noInternet = MutableLiveData<String>()
+    val noInternet: LiveData<String> = _noInternet
 
     fun getDataForSpiner(connString: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -101,7 +100,7 @@ class MainActivityViewModel(
         when (item.error) {
             ErrorType.ERROR -> _errorLiveData.postValue(item.message.toString())
             ErrorType.CONNECTION_ERROR -> _errorLiveData.postValue("Отсутствует подключение к интернету")
-            else -> _resultGarbageLiveData.postValue(true)
+            else -> {}
         }
     }
 

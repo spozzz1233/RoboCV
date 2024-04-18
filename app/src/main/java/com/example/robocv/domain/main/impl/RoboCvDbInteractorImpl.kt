@@ -1,6 +1,6 @@
 package com.example.robocv.domain.main.impl
 
-import com.example.robocv.data.Resource
+import com.example.robocv.util.Resource
 import com.example.robocv.data.RoboCvDbRepository
 import com.example.robocv.domain.main.RoboCvDbInteractor
 import com.example.robocv.domain.model.Garbage

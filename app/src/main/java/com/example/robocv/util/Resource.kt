@@ -1,4 +1,4 @@
-package com.example.robocv.data
+package com.example.robocv.util
 
 import com.example.robocv.domain.ErrorType
 
