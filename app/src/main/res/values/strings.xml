@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">RoboCV</string>
+    <string name="spinner_hint">Выберите элемент</string>
+    <string name="connection_string">jdbc:jtds:sqlserver://10.0.0.50:1433;user=android;password=android</string>
+    <string-array name="Type">
+        <item>0</item>
+        <item>1</item>
+        <item>2 ТУМ</item>
+        <item>3 БРАК</item>
+        <item>4 ГП</item>
+    </string-array>
+</resources>
