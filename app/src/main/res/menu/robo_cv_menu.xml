@@ -4,6 +4,5 @@
         android:id="@+id/Contents_of_the_cart"
         android:title="@string/Contents_of_the_cart"
         android:checkable="true"
-
         />
 </menu>

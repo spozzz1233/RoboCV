@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.Contents_of_the_cart -> {
-                item.isChecked = isChecked
                 item.isChecked = !item.isChecked
                 garbageVisibility(item.isChecked)
                 saveCheckedState(item.isChecked)
@@ -286,7 +285,7 @@ private fun getDataForSpinersFrom(connString: String) {
     }
     private fun getCheckedState(): Boolean {
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getBoolean("isChecked", false) // Default value is false if not found
+        return sharedPreferences.getBoolean("isChecked", false)
     }
 
 }
