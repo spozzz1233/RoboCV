@@ -10,6 +10,8 @@
     <string name="number_cells">Номер ячейки</string>
     <string name="clear_all">Очистить всё</string>
     <string name="name">Наименование</string>
+    <string name="Trolley_control">Управление тележкой</string>
+    <string name="Contents_of_the_cart">Содержимое тележки</string>
     <string-array name="Type">
         <item>0</item>
         <item>1</item>

@@ -5,6 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/robo_cv_menu"
+        >
+
+    </androidx.appcompat.widget.Toolbar>
+
     <ProgressBar
         android:id="@+id/MainProgressBar"
         android:layout_width="44dp"
@@ -21,40 +34,40 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/centre_border"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
-            />
+            app:layout_constraintGuide_percent="0.5" />
 
-        <TextView
-            android:id="@+id/TextView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="@string/to"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@+id/spinerToBorder"
-            app:layout_constraintEnd_toStartOf="@+id/spinerToBorder"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinerToBorder" />
+        <!--        <TextView-->
+        <!--            android:id="@+id/TextView1"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="5dp"-->
+        <!--            android:text="@string/to"-->
+        <!--            android:textSize="15sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/spinerToBorder"-->
+        <!--            app:layout_constraintEnd_toStartOf="@+id/spinerToBorder"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/spinerToBorder" />-->
 
-        <TextView
-            android:id="@+id/TextView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/from"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@+id/spinerFromBorder"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinerFromBorder" />
+        <!--        <TextView-->
+        <!--            android:id="@+id/TextView2"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="10dp"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:text="@string/from"-->
+        <!--            android:textSize="15sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/spinerFromBorder"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/spinerFromBorder" />-->
 
 
         <com.google.android.material.card.MaterialCardView
@@ -63,8 +76,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:cardCornerRadius="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TextView2"
+            app:layout_constraintEnd_toStartOf="@+id/centre_border"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeColor="@color/black"
             app:strokeWidth="1dp">
@@ -73,26 +86,28 @@
                 android:id="@+id/spinerFrom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp" />
+                android:padding="20dp"
+                android:spinnerMode="dialog"/>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/spinerToBorder"
+            style="@style/spinner_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/spinner_style"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/black"
             app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TextView2"
-            app:layout_constraintTop_toBottomOf="@+id/spinerFromBorder">
+            app:layout_constraintStart_toStartOf="@+id/centre_border"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/black"
+            app:strokeWidth="1dp">
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spinerTo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp"/>
+                android:padding="20dp"
+                android:spinnerMode="dialog"/>
         </com.google.android.material.card.MaterialCardView>
 
 
@@ -125,143 +140,15 @@
             app:layout_constraintStart_toStartOf="@+id/centre_border"
             app:layout_constraintTop_toBottomOf="@+id/spinerToBorder" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/spinerTypeBorder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/spinner_style"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/black"
-            app:cardCornerRadius="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/send_button">
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/spinerType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="20dp"/>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/clearAll"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/clear_all"
-            android:textSize="13sp"
-            app:backgroundTint="@color/black"
-            app:cornerRadius="5dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinerTypeBorder" />
-
-        <View
-            android:id="@+id/line2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/clearAll" />
-
-
-
-        <LinearLayout
-            android:id="@+id/header_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/line2">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_cells"
-                    android:textSize="12sp" />
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="2dp"
-                    android:background="@color/black" />
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/number_cells"
-                    android:textSize="12sp" />
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="4dp"
-                    android:background="@color/black" />
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:text="@string/name"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_gravity="bottom"
-                android:background="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
+        <include
+            android:id="@+id/garbage_module"
+            layout="@layout/garbage_module"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/header_title">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/line2"
-                tools:listitem="@layout/card_garbage" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="40dp"
-                android:baselineAligned="false"
-                android:indeterminateTint="@color/black"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/placeholderMesage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="50dp"
-                android:text="Список пуст"
-                android:textSize="20sp"
-                android:visibility="gone" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/send_button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

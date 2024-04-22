@@ -1,30 +1,30 @@
 package com.example.robocv.ui.main.activity
 
 import MainActivityViewModel
+import android.R.id.message
 import android.annotation.SuppressLint
-import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.CheckBox
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.robocv.R
 import com.example.robocv.databinding.ActivityMainBinding
-import com.example.robocv.domain.ErrorType
 import com.example.robocv.domain.model.StoragePlaceRoboCV
 import com.example.robocv.ui.main.adapter.GarbageAdapter
 import com.example.robocv.ui.main.adapter.SpinerAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.dialog.MaterialDialogs
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.FieldPosition
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,21 +35,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var connString: String
     private var storagePlace: List<Int> = ArrayList()
     private var tabNum: String? = "1"
-    private var errorDialogShown = false
-
+    private var isChecked: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        isChecked = getCheckedState()
         connString = resources.getString(R.string.connection_string)
+
         tabNum = intent.getStringExtra("tabNum")
 
         getDataForSpinersFrom(connString)
         getDataForSpinersTo(connString)
         getDataForSpinersType()
         initialGarbageAdapter()
+        garbageVisibility(isChecked)
 
+        initialToolbar()
         allVisibility()
         errorDialog(cancelable = false) {
             finish()
@@ -57,14 +59,14 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        binding.spinerType.onItemSelectedListener = object : OnItemSelectedListener {
+        binding.garbageModule.spinerType.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long
             ) {
-                val floor = binding.spinerType.selectedItemPosition
+                val floor = binding.garbageModule.spinerType.selectedItemPosition
                 if(floor != 0){
                     getGarbageInformation(connString)
                     initialGarbageAdapter()
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.clearAll.setOnClickListener {
+        binding.garbageModule.clearAll.setOnClickListener {
             deleteAllElements(connString)
         }
 
@@ -86,9 +88,35 @@ class MainActivity : AppCompatActivity() {
         binding.deleteButton.setOnClickListener {
             taskForRobot(connString, 3)
         }
+
+
     }
 
-    private fun getDataForSpinersFrom(connString: String) {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.robo_cv_menu, menu)
+        val menuItem = menu.findItem(R.id.Contents_of_the_cart)
+        menuItem.isChecked = isChecked
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.Contents_of_the_cart -> {
+                item.isChecked = isChecked
+                item.isChecked = !item.isChecked
+                garbageVisibility(item.isChecked)
+                saveCheckedState(item.isChecked)
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
+
+
+
+private fun getDataForSpinersFrom(connString: String) {
         viewModel.getDataForSpiner(connString)
         viewModel.spinerLiveData.observe(this) { data ->
             allVisibility()
@@ -128,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        binding.spinerType.setAdapter(adapter)
+        binding.garbageModule.spinerType.setAdapter(adapter)
     }
 
     private fun taskForRobot(connString: String, type: Int) {
@@ -155,13 +183,13 @@ class MainActivity : AppCompatActivity() {
                 garbageAdapter.notifyItemChanged(position)
             })
         })
-        binding.recyclerView.adapter = garbageAdapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.garbageModule.recyclerView.adapter = garbageAdapter
+        binding.garbageModule.recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
 
     private fun getGarbageInformation(connString: String) {
-        val floor: String = binding.spinerType.selectedItemPosition.toString()
+        val floor: String = binding.garbageModule.spinerType.selectedItemPosition.toString()
         viewModel.selectedGarbageOut(connString, floor)
         viewModel.garbageLiveData.observe(this) { data ->
             garbageAdapter.setItems(data)
@@ -194,14 +222,14 @@ class MainActivity : AppCompatActivity() {
             binding.main.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
         viewModel.loadingLiveData.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.garbageModule.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
         viewModel.noResultLiveData.observe(this) { isLoading ->
-            binding.placeholderMesage.visibility = if (isLoading) View.VISIBLE else View.GONE
-            binding.headerTitle.visibility = if (isLoading) View.GONE else View.VISIBLE
+            binding.garbageModule.placeholderMesage.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.garbageModule.headerTitle.visibility = if (isLoading) View.GONE else View.VISIBLE
         }
         viewModel.resultLiveData.observe(this) { isLoading ->
-            binding.recyclerView.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.garbageModule.recyclerView.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
 
@@ -236,6 +264,29 @@ class MainActivity : AppCompatActivity() {
             }
 
         builder.show()
+    }
+
+    private fun initialToolbar(){
+        setSupportActionBar(binding.toolbar)
+        setTitle("Управление тележкой")
+    }
+
+    private fun garbageVisibility(isChecked: Boolean){
+        if(isChecked){
+            binding.garbageModule.garbageAll.visibility = View.VISIBLE
+        }else{
+            binding.garbageModule.garbageAll.visibility = View.GONE
+        }
+    }
+    private fun saveCheckedState(isChecked: Boolean) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isChecked", isChecked)
+        editor.apply()
+    }
+    private fun getCheckedState(): Boolean {
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("isChecked", false) // Default value is false if not found
     }
 
 }
