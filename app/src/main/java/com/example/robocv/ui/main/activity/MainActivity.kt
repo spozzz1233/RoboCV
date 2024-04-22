@@ -1,7 +1,6 @@
 package com.example.robocv.ui.main.activity
 
 import MainActivityViewModel
-import android.R.id.message
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
@@ -12,11 +11,8 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.CheckBox
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.robocv.R
 import com.example.robocv.databinding.ActivityMainBinding
@@ -36,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     private var storagePlace: List<Int> = ArrayList()
     private var tabNum: String? = "1"
     private var isChecked: Boolean = false
+    private var firstRunFlag: Int = 0
+    private var positiveButton: String = "Да"
+    private var negativeButton: String = "Нет"
+    private var checkError: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -54,7 +54,9 @@ class MainActivity : AppCompatActivity() {
         initialToolbar()
         allVisibility()
         errorDialog(cancelable = false) {
-            finish()
+            if (firstRunFlag < 1) {
+                //finish()
+            }
         }
 
 
@@ -67,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 val floor = binding.garbageModule.spinerType.selectedItemPosition
-                if(floor != 0){
+                if (floor != 0) {
                     getGarbageInformation(connString)
                     initialGarbageAdapter()
                 }
@@ -82,11 +84,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.sendButton.setOnClickListener {
-            taskForRobot(connString, 1)
+            taskForRobot("Отправить задание роботу?", connString, 1)
+
         }
 
         binding.deleteButton.setOnClickListener {
-            taskForRobot(connString, 3)
+            taskForRobot("Удалить задание?", connString, 3)
         }
 
 
@@ -99,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         menuItem.isChecked = isChecked
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.Contents_of_the_cart -> {
@@ -107,15 +111,13 @@ class MainActivity : AppCompatActivity() {
                 saveCheckedState(item.isChecked)
                 return true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
 
-
-
-
-private fun getDataForSpinersFrom(connString: String) {
+    private fun getDataForSpinersFrom(connString: String) {
         viewModel.getDataForSpiner(connString)
         viewModel.spinerLiveData.observe(this) { data ->
             allVisibility()
@@ -128,6 +130,7 @@ private fun getDataForSpinersFrom(connString: String) {
             }
             adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinerFrom.adapter = adapter
+            firstRunFlag = 1
         }
     }
 
@@ -158,10 +161,10 @@ private fun getDataForSpinersFrom(connString: String) {
         binding.garbageModule.spinerType.setAdapter(adapter)
     }
 
-    private fun taskForRobot(connString: String, type: Int) {
+    private fun taskForRobot(title: String, connString: String, type: Int) {
         val storagePlaceFrom = binding.spinerFrom.selectedItem as StoragePlaceRoboCV
         val storagePlaceTo = binding.spinerTo.selectedItem as StoragePlaceRoboCV
-        positiveDialog("Отправить задание роботу ?", onPositiveButtonClick = {
+        positiveDialog(title, negativeButton, positiveButton) {
             viewModel.sendTaskForRobot(
                 connString,
                 storagePlaceFrom.id ?: 0,
@@ -169,18 +172,29 @@ private fun getDataForSpinersFrom(connString: String) {
                 "1",
                 type
             )
-        })
+            viewModel.taskSentLiveData.observe(this) { isTaskSent ->
+                if (isTaskSent) {
+                    if (type == 1) {
+                        positiveDialog("Задание отправлено", "", "Ок")
+                    } else if (type == 3) {
+                        positiveDialog("Задание удалено", "", "Ок")
+                    }
+                }
+            }
+        }
     }
+
+
 
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initialGarbageAdapter() {
         garbageAdapter = GarbageAdapter(clickListener = { item, position ->
-            positiveDialog("Очистить выбраную ячейку ?", onPositiveButtonClick = {
+            positiveDialog("Очистить выбраную ячейку ?", negativeButton, positiveButton) {
                 viewModel.deleteSelectedItemFromGarbages(connString, item.StoragePlace)
                 item.name = "0"
                 garbageAdapter.notifyItemChanged(position)
-            })
+            }
         })
         binding.garbageModule.recyclerView.adapter = garbageAdapter
         binding.garbageModule.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -197,7 +211,7 @@ private fun getDataForSpinersFrom(connString: String) {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun deleteAllElements(connString: String) {
-        positiveDialog("Очистить все ячейки ?", onPositiveButtonClick = {
+        positiveDialog("Очистить все ячейки ?", negativeButton, positiveButton) {
             viewModel.garbageLiveData.observe(this) { data ->
                 storagePlace = data.map { it.StoragePlace }
                 getGarbageInformation(connString)
@@ -209,7 +223,7 @@ private fun getDataForSpinersFrom(connString: String) {
                 Toast.makeText(this, "Нет элементов для удаления!", Toast.LENGTH_SHORT)
                     .show()
             }
-        })
+        }
 
     }
 
@@ -221,14 +235,18 @@ private fun getDataForSpinersFrom(connString: String) {
             binding.main.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
         viewModel.loadingLiveData.observe(this) { isLoading ->
-            binding.garbageModule.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.garbageModule.progressBar.visibility =
+                if (isLoading) View.VISIBLE else View.GONE
         }
         viewModel.noResultLiveData.observe(this) { isLoading ->
-            binding.garbageModule.placeholderMesage.visibility = if (isLoading) View.VISIBLE else View.GONE
-            binding.garbageModule.headerTitle.visibility = if (isLoading) View.GONE else View.VISIBLE
+            binding.garbageModule.placeholderMesage.visibility =
+                if (isLoading) View.VISIBLE else View.GONE
+            binding.garbageModule.headerTitle.visibility =
+                if (isLoading) View.GONE else View.VISIBLE
         }
         viewModel.resultLiveData.observe(this) { isLoading ->
-            binding.garbageModule.recyclerView.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.garbageModule.recyclerView.visibility =
+                if (isLoading) View.VISIBLE else View.GONE
         }
     }
 
@@ -246,43 +264,48 @@ private fun getDataForSpinersFrom(connString: String) {
                     dialog.dismiss()
                 }
             builder.show()
+
         }
     }
 
     private fun positiveDialog(
         title: String,
+        negativeButton: String? = null,
+        positiveButton: String,
         onPositiveButtonClick: (() -> Unit)? = null
     ) {
         val builder = MaterialAlertDialogBuilder(this)
             .setTitle(title)
-            .setNegativeButton("Нет") { dialog, _ ->
+            .setNegativeButton(negativeButton) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Да") { dialog, _ ->
+            .setPositiveButton(positiveButton) { dialog, _ ->
                 onPositiveButtonClick?.invoke()
             }
 
         builder.show()
     }
 
-    private fun initialToolbar(){
+    private fun initialToolbar() {
         setSupportActionBar(binding.toolbar)
         setTitle("Управление тележкой")
     }
 
-    private fun garbageVisibility(isChecked: Boolean){
-        if(isChecked){
+    private fun garbageVisibility(isChecked: Boolean) {
+        if (isChecked) {
             binding.garbageModule.garbageAll.visibility = View.VISIBLE
-        }else{
+        } else {
             binding.garbageModule.garbageAll.visibility = View.GONE
         }
     }
+
     private fun saveCheckedState(isChecked: Boolean) {
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putBoolean("isChecked", isChecked)
         editor.apply()
     }
+
     private fun getCheckedState(): Boolean {
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getBoolean("isChecked", false)

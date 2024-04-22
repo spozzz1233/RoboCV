@@ -54,7 +54,6 @@ class RoboCvDbRepositoryImpl(
         type: Int
     ): Flow<Resource<Unit>> = flow {
         try {
-
             var preparedStatement: PreparedStatement? = null
             val connection = connectionToDb(connString)
             val sql =
@@ -66,6 +65,7 @@ class RoboCvDbRepositoryImpl(
             preparedStatement.setInt(4, type)
             preparedStatement.executeUpdate()
             connection.close()
+            emit(Resource.Success(Unit))
         }  catch (ex: Exception) {
             emit(Resource.Error(ErrorType.ERROR, ex.message.toString()))
         }

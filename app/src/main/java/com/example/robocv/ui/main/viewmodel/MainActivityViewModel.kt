@@ -37,8 +37,8 @@ class MainActivityViewModel(
     private val _mainLoadingLiveData = MutableLiveData<Boolean>()
     val mainLoadingLiveData: LiveData<Boolean> = _mainLoadingLiveData
 
-    private val _noInternet = MutableLiveData<String>()
-    val noInternet: LiveData<String> = _noInternet
+    private val _taskSentLiveData = MutableLiveData<Boolean>()
+    val taskSentLiveData: LiveData<Boolean> = _taskSentLiveData
 
     fun getDataForSpiner(connString: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,11 +60,22 @@ class MainActivityViewModel(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             interactor.sendTaskForRobot(connString, storagePlaceFrom, storagePlaceTo, tabNum, type)
-                .collect {
-                    errorHandler(it)
+                .collect { resource ->
+                    when(resource){
+                        is Resource.Success -> {
+                            errorHandler(resource)
+                            _taskSentLiveData.postValue(true)
+                        }
+                        is Resource.Error -> {
+                            errorHandler(resource)
+                            _taskSentLiveData.postValue(false)
+                        }
+                    }
                 }
         }
     }
+
+
 
     fun selectedGarbageOut(connString: String, floor: String) {
         _loadingLiveData.value = true
@@ -94,12 +105,17 @@ class MainActivityViewModel(
     }
 
     fun <T> errorHandler(item: Resource<T>) {
+
         if (item.message.toString().contains("Network")) {
             item.error = ErrorType.CONNECTION_ERROR
         }
         when (item.error) {
-            ErrorType.ERROR -> _errorLiveData.postValue(item.message.toString())
-            ErrorType.CONNECTION_ERROR -> _errorLiveData.postValue("Отсутствует подключение к интернету")
+            ErrorType.ERROR -> {
+                _errorLiveData.postValue(item.message.toString())
+            }
+            ErrorType.CONNECTION_ERROR -> {
+                _errorLiveData.postValue("Отсутствует подключение к интернету")
+            }
             else -> {}
         }
     }
