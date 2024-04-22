@@ -34,8 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var garbageAdapter: GarbageAdapter
     private lateinit var connString: String
     private var storagePlace: List<Int> = ArrayList()
-    private var tabNum: String? = ""
-    private lateinit var floor: String
+    private var tabNum: String? = "1"
     private var errorDialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,15 +46,16 @@ class MainActivity : AppCompatActivity() {
         tabNum = intent.getStringExtra("tabNum")
 
         getDataForSpinersFrom(connString)
+        getDataForSpinersTo(connString)
+        getDataForSpinersType()
+        initialGarbageAdapter()
+
         allVisibility()
-        errorDialog(cancelable = false){
-            if (!errorDialogShown) {
-                finish()
-                errorDialogShown = true
-            }
+        errorDialog(cancelable = false) {
+            finish()
         }
 
-        floor = binding.spinerType.selectedItemPosition.toString()
+
 
         binding.spinerType.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(
@@ -64,8 +64,11 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                getGarbageInformation(connString)
-                initialGarbageAdapter()
+                val floor = binding.spinerType.selectedItemPosition
+                if(floor != 0){
+                    getGarbageInformation(connString)
+                    initialGarbageAdapter()
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -77,13 +80,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.sendButton.setOnClickListener {
-            createTaskForRobot(connString)
+            taskForRobot(connString, 1)
         }
 
         binding.deleteButton.setOnClickListener {
-            deleteTaskForRobot(connString)
+            taskForRobot(connString, 3)
         }
-
     }
 
     private fun getDataForSpinersFrom(connString: String) {
@@ -99,11 +101,6 @@ class MainActivity : AppCompatActivity() {
             }
             adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinerFrom.adapter = adapter
-            if( data.isNotEmpty()){
-                getDataForSpinersTo(connString)
-                getDataForSpinersType(connString)
-                initialGarbageAdapter()
-            }
         }
     }
 
@@ -123,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDataForSpinersType(connString: String) {
+    private fun getDataForSpinersType() {
         //spiner type
         val adapter = ArrayAdapter.createFromResource(
             this, R.array.Type,
@@ -134,46 +131,29 @@ class MainActivity : AppCompatActivity() {
         binding.spinerType.setAdapter(adapter)
     }
 
-    private fun createTaskForRobot(connString: String) {
+    private fun taskForRobot(connString: String, type: Int) {
         val storagePlaceFrom = binding.spinerFrom.selectedItem as StoragePlaceRoboCV
         val storagePlaceTo = binding.spinerTo.selectedItem as StoragePlaceRoboCV
-        positiveDialog("Отправить задание роботу ?") {
-            tabNum?.let {
-                viewModel.sendTaskForRobot(
-                    connString,
-                    storagePlaceFrom.id ?: 0,
-                    storagePlaceTo.id ?: 0,
-                    it,
-                    1
-                )
-            }
-        }
+        positiveDialog("Отправить задание роботу ?", onPositiveButtonClick = {
+            viewModel.sendTaskForRobot(
+                connString,
+                storagePlaceFrom.id ?: 0,
+                storagePlaceTo.id ?: 0,
+                "1",
+                type
+            )
+        })
     }
 
-    private fun deleteTaskForRobot(connString: String) {
-        val storagePlaceFrom = binding.spinerFrom.selectedItem as StoragePlaceRoboCV
-        val storagePlaceTo = binding.spinerTo.selectedItem as StoragePlaceRoboCV
-        positiveDialog("Удалить задания робота ?") {
-            tabNum?.let {
-                viewModel.sendTaskForRobot(
-                    connString,
-                    storagePlaceFrom.id ?: 0,
-                    storagePlaceTo.id ?: 0,
-                    it,
-                    3
-                )
-            }
-        }
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initialGarbageAdapter() {
         garbageAdapter = GarbageAdapter(clickListener = { item, position ->
-            positiveDialog("Очистить выбраную ячейку ?") {
+            positiveDialog("Очистить выбраную ячейку ?", onPositiveButtonClick = {
                 viewModel.deleteSelectedItemFromGarbages(connString, item.StoragePlace)
                 item.name = "0"
                 garbageAdapter.notifyItemChanged(position)
-            }
+            })
         })
         binding.recyclerView.adapter = garbageAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -181,20 +161,16 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getGarbageInformation(connString: String) {
+        val floor: String = binding.spinerType.selectedItemPosition.toString()
         viewModel.selectedGarbageOut(connString, floor)
         viewModel.garbageLiveData.observe(this) { data ->
-            if (data.isNotEmpty()) {
-                binding.headerTitle.visibility = View.VISIBLE
-                garbageAdapter.setItems(data)
-            } else {
-                binding.headerTitle.visibility = View.GONE
-            }
+            garbageAdapter.setItems(data)
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun deleteAllElements(connString: String) {
-        positiveDialog("Очистить все ячейки ?") {
+        positiveDialog("Очистить все ячейки ?", onPositiveButtonClick = {
             viewModel.garbageLiveData.observe(this) { data ->
                 storagePlace = data.map { it.StoragePlace }
                 getGarbageInformation(connString)
@@ -206,7 +182,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Нет элементов для удаления!", Toast.LENGTH_SHORT)
                     .show()
             }
-        }
+        })
 
     }
 
@@ -252,12 +228,11 @@ class MainActivity : AppCompatActivity() {
     ) {
         val builder = MaterialAlertDialogBuilder(this)
             .setTitle(title)
-            .setPositiveButton("Да") { dialog, _ ->
-                onPositiveButtonClick?.invoke()
-                dialog.dismiss()
-            }
             .setNegativeButton("Нет") { dialog, _ ->
                 dialog.dismiss()
+            }
+            .setPositiveButton("Да") { dialog, _ ->
+                onPositiveButtonClick?.invoke()
             }
 
         builder.show()

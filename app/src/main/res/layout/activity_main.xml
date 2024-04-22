@@ -37,11 +37,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:text="Из"
+            android:text="@string/to"
             android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/spinerToBorder"
+            app:layout_constraintEnd_toStartOf="@+id/spinerToBorder"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinerFrom" />
+            app:layout_constraintTop_toTopOf="@+id/spinerToBorder" />
 
         <TextView
             android:id="@+id/TextView2"
@@ -49,83 +50,113 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:text="В"
+            android:text="@string/from"
             android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/spinerFromBorder"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinerTo" />
+            app:layout_constraintTop_toTopOf="@+id/spinerFromBorder" />
 
-        <Spinner
-            android:id="@+id/spinerFrom"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TextView1"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <Spinner
-            android:id="@+id/spinerTo"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="5dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/spinerFromBorder"
+            style="@style/spinner_style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/TextView2"
-            app:layout_constraintTop_toBottomOf="@+id/spinerFrom" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/black"
+            app:strokeWidth="1dp">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinerFrom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/spinerToBorder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/spinner_style"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/black"
+            app:cardCornerRadius="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/TextView2"
+            app:layout_constraintTop_toBottomOf="@+id/spinerFromBorder">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinerTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"/>
+        </com.google.android.material.card.MaterialCardView>
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/delete_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginHorizontal="5dp"
             android:layout_marginTop="10dp"
-            android:text="Удалить задание"
-            android:textSize="10sp"
+            android:text="@string/delete_task"
+            android:textSize="12sp"
             app:backgroundTint="@color/black"
             app:cornerRadius="5dp"
             app:layout_constraintEnd_toStartOf="@+id/centre_border"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinerTo" />
+            app:layout_constraintTop_toBottomOf="@+id/spinerToBorder" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/send_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginHorizontal="5dp"
             android:layout_marginTop="10dp"
-            android:text="Отправить"
-            android:textSize="10sp"
+            android:text="@string/send"
+            android:textSize="12sp"
             android:visibility="visible"
             app:backgroundTint="@color/black"
             app:cornerRadius="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centre_border"
-            app:layout_constraintTop_toBottomOf="@+id/spinerTo" />
+            app:layout_constraintTop_toBottomOf="@+id/spinerToBorder" />
 
-        <Spinner
-            android:id="@+id/spinerType"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/spinerTypeBorder"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:spinnerMode="dialog"
+            android:layout_height="wrap_content"
+            style="@style/spinner_style"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/black"
+            app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/line1" />
+            app:layout_constraintTop_toBottomOf="@+id/send_button">
 
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinerType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"/>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/clearAll"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="15dp"
-            android:text="Очистить всё"
-            android:textSize="10sp"
+            android:layout_marginTop="10dp"
+            android:text="@string/clear_all"
+            android:textSize="13sp"
             app:backgroundTint="@color/black"
             app:cornerRadius="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinerType" />
+            app:layout_constraintTop_toBottomOf="@+id/spinerTypeBorder" />
 
         <View
             android:id="@+id/line2"
@@ -135,13 +166,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/clearAll" />
 
-        <View
-            android:id="@+id/line1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/send_button" />
+
 
         <LinearLayout
             android:id="@+id/header_title"
@@ -160,7 +185,7 @@
                 <TextView
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
-                    android:text="Id ячейки"
+                    android:text="@string/id_cells"
                     android:textSize="12sp" />
 
                 <View
@@ -172,7 +197,7 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Номер ячейки"
+                    android:text="@string/number_cells"
                     android:textSize="12sp" />
 
                 <View
@@ -185,7 +210,7 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:text="Наименование"
+                    android:text="@string/name"
                     android:textSize="12sp" />
 
             </LinearLayout>

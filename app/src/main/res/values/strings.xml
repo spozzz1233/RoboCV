@@ -2,6 +2,14 @@
     <string name="app_name">RoboCV</string>
     <string name="spinner_hint">Выберите элемент</string>
     <string name="connection_string">jdbc:jtds:sqlserver://10.0.0.50:1433;user=android;password=android</string>
+    <string name="to">В</string>
+    <string name="from">Из</string>
+    <string name="delete_task">Удалить задание</string>
+    <string name="send">Отправить</string>
+    <string name="id_cells">Id ячейки</string>
+    <string name="number_cells">Номер ячейки</string>
+    <string name="clear_all">Очистить всё</string>
+    <string name="name">Наименование</string>
     <string-array name="Type">
         <item>0</item>
         <item>1</item>
