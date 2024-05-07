@@ -45,6 +45,7 @@ class MainActivityViewModel(
             interactor.selectTableForSpinerFrom(connString)
                 .collect {
                     errorHandler(it)
+
                     handleResourceSpiner(it)
                 }
         }
@@ -61,6 +62,7 @@ class MainActivityViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             interactor.sendTaskForRobot(connString, storagePlaceFrom, storagePlaceTo, tabNum, type)
                 .collect { resource ->
+                    _taskSentLiveData.postValue(false)
                     when(resource){
                         is Resource.Success -> {
                             errorHandler(resource)
@@ -123,11 +125,14 @@ class MainActivityViewModel(
     private fun handleResourceGarbage(item: Resource<ArrayList<Garbage>>) {
         if (item.error == null) {
             item.data?.let {
+
                 if (it.isNotEmpty()) {
                     _garbageLiveData.postValue(it)
                     _loadingLiveData.postValue(false)
                     _noResultLiveData.postValue(false)
                     _resultLiveData.postValue(true)
+                    _mainResultLiveData.postValue(true)
+                    _mainLoadingLiveData.postValue(false)
                 } else {
                     _loadingLiveData.postValue(false)
                     _noResultLiveData.postValue(true)
@@ -139,15 +144,17 @@ class MainActivityViewModel(
     private fun handleResourceSpiner(item: Resource<ArrayList<StoragePlaceRoboCV>>) {
         if (item.error == null) {
             item.data?.let {
+                _mainResultLiveData.postValue(false)
+                _mainLoadingLiveData.postValue(true)
                 if (it.isNotEmpty()) {
-                    _mainResultLiveData.postValue(true)
                     _spinerLiveData.postValue(it)
+                    _mainResultLiveData.postValue(true)
                     _mainLoadingLiveData.postValue(false)
-                } else {
-                    _mainLoadingLiveData.postValue(false)
-                    _mainResultLiveData.postValue(false)
                 }
             }
+        }else{
+            _mainResultLiveData.postValue(false)
+            _mainLoadingLiveData.postValue(true)
         }
 
     }

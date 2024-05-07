@@ -55,10 +55,9 @@ class MainActivity : AppCompatActivity() {
         allVisibility()
         errorDialog(cancelable = false) {
             if (firstRunFlag < 1) {
-                //finish()
+                finish()
             }
         }
-
 
 
         binding.garbageModule.spinerType.onItemSelectedListener = object : OnItemSelectedListener {
@@ -91,8 +90,11 @@ class MainActivity : AppCompatActivity() {
         binding.deleteButton.setOnClickListener {
             taskForRobot("Удалить задание?", connString, 3)
         }
-
-
+        viewModel.taskSentLiveData.observe(this) { isTaskSent ->
+            if (isTaskSent) {
+                positiveDialog("Задание отправлено", "", "Ок")
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -124,11 +126,11 @@ class MainActivity : AppCompatActivity() {
             //from spiner
             val adapter = data?.let {
                 SpinerAdapter(
-                    this, android.R.layout.simple_spinner_item,
+                    this, R.layout.custom_spiner,
                     it
                 )
             }
-            adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            adapter?.setDropDownViewResource(R.layout.custom_spiner)
             binding.spinerFrom.adapter = adapter
             firstRunFlag = 1
         }
@@ -154,38 +156,36 @@ class MainActivity : AppCompatActivity() {
         //spiner type
         val adapter = ArrayAdapter.createFromResource(
             this, R.array.Type,
-            android.R.layout.simple_spinner_item
+            R.layout.custom_spiner
         )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        adapter.setDropDownViewResource(R.layout.custom_spiner)
 
         binding.garbageModule.spinerType.setAdapter(adapter)
     }
 
     private fun taskForRobot(title: String, connString: String, type: Int) {
-        val storagePlaceFrom = binding.spinerFrom.selectedItem as StoragePlaceRoboCV
-        val storagePlaceTo = binding.spinerTo.selectedItem as StoragePlaceRoboCV
-        positiveDialog(title, negativeButton, positiveButton) {
-            viewModel.sendTaskForRobot(
-                connString,
-                storagePlaceFrom.id ?: 0,
-                storagePlaceTo.id ?: 0,
-                "1",
-                type
-            )
-            viewModel.taskSentLiveData.observe(this) { isTaskSent ->
-                if (isTaskSent) {
-                    if (type == 1) {
-                        positiveDialog("Задание отправлено", "", "Ок")
-                    } else if (type == 3) {
-                        positiveDialog("Задание удалено", "", "Ок")
-                    }
+        checkError = false
+        val storagePlaceFrom = binding.spinerFrom.selectedItem as? StoragePlaceRoboCV
+        val storagePlaceTo = binding.spinerTo.selectedItem as? StoragePlaceRoboCV
+        if (storagePlaceFrom != null && storagePlaceTo != null) {
+            if(storagePlaceFrom.id?.equals(storagePlaceTo.id) != true){
+                positiveDialog(title, negativeButton, positiveButton) {
+                    viewModel.sendTaskForRobot(
+                        connString,
+                        storagePlaceFrom.id ?: 0,
+                        storagePlaceTo.id ?: 0,
+                        "1",
+                        type
+                    )
                 }
+            }else{
+                Toast.makeText(this, "Укажите разные ячейки!", Toast.LENGTH_SHORT).show()
             }
+
+        } else {
+            Toast.makeText(this, "Укажите задание роботу", Toast.LENGTH_SHORT).show()
         }
     }
-
-
-
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initialGarbageAdapter() {

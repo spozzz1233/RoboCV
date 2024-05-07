@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom_text_view_for_spiner"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:spinnerMode = "dropdown"
+    android:textSize="15sp"
+    android:textColor="@color/black"
+    android:shadowColor="#80ffffff"
+    android:shadowRadius="3"
+    android:background="@drawable/dropdown_divider"
+    android:itemBackground="#aa0022"
+    android:paddingTop="20dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp"
+    android:popupBackground="#aa0022" />

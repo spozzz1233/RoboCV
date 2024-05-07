@@ -72,9 +72,10 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/spinerFromBorder"
+            android:layout_marginTop="5dp"
             style="@style/spinner_style"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toStartOf="@+id/centre_border"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,9 +94,10 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/spinerToBorder"
+            android:layout_marginTop="5dp"
             style="@style/spinner_style"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centre_border"
